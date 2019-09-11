@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Functional page</title>
+</head>
+<h1 id ="h"> just a heading </h1>
+
+<script>
+var element = document.getElementById("h");
+element.innerHTML = "Yo Yo";
+</script>
+
+<body>
+
+
+  <iframe src="https://editor.p5js.org/nt1475@nyu.edu/embed/4xRu2C5cu"></iframe>
+
+  <br>
+
+  <p>I've always wondered how they do this keyboard input thing <kbd>Ctrl + S</kbd></p>
+  <p>I'm <del>tired</del> excited.</p>
+  <p id ="top"><a href="#bottom"> Jump to bottom </a></p>
+
+  <p> <abbr title="Interactive Telecommunications Program">ITP</abbr>, what is it actually</p>
+
+  <bdo dir="rtl"> <em style="color:pink; font-size:500%">|</em> Why would anyone do this?</bdo> Why would anyone do this?
+  <p> spot the pink mirror </p>
+  <br>
+  <p id="p1">HTML inception</p>
+
+  <!-- <p><button>Click me to alter inception</button> </p> -->
+
+
+  <script type="text/javascript">
+  function changeIt()
+  {
+    var thediv = document.getElementById('hhhh');
+    htmlphoto.width = Math.random()*500;
+    htmlphoto.height = Math.random()*500;
+  }
+  </script>
+  <input type="button" name="Click me to alter inception" value="Change It" onClick="changeIt();" />
+  <br>
+
+
+  <img id="htmlphoto" src="html.jpg" width="450" height="300">
+  <br>
+
+  <!-- THIS IS THE SLIDER -->
+
+  <div class="slidecontainer">
+    <input type="range" min="1" max="1000" value="500" class="slider" id="myRange">
+    <p>Value: <span id="demo"></span></p>
+  </div>
+
+  <script>
+  var slider = document.getElementById("myRange");
+  var output = document.getElementById("demo");
+  output.innerHTML = slider.value;
+
+  slider.oninput = function() {
+    output.innerHTML = this.value;
+    htmlvid.width = this.value;
+    htmlvid.height = this.value;
+  }
+</script>
+
+<video id="htmlvid" width="640" height="450" controls>
+  <source src="sunrise.mp4" type="video/mp4">
+    <br>
+    Your browser does not support the video tag.
+  </video>
+
+  <!-- <img id="htmlphoto2" src="html.jpg" width="450" height="300"> -->
+  <!-- END OF SLIDER -->
+  <br>
+  <img src="img_typo.jpg" alt="This is an image you'll never see">
+  <br>
+  <br>
+  <br>
+  <p title="I'm a tooltip">
+    we need to take a break, but first mouseover me</p>
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <a href="https://nuntinee.com">Link to best <sub> site </sub> on <sup> internet </sup> </a>
+    <p>
+    </p>
+
+    <ul>
+      <li  style="color:yellow; background-color:powderblue;">Monday blues</li>
+      <li  style="color:pink">Tuesday</li>
+      <li style="color:green">...What's next ... it must be green</li>
+      <li style="font-size:160%;">but what day is it?</li>
+    </ul>
+
+    <script type="text/javascript">
+    document.write(Date());
+    </script>
+    <br>
+    <a href="https://g.co/kgs/7vYHHb"> (I didn't know color-coded days was a Thai thing) </a>
+    <br>
+
+    <pre>
+      I am preformatted
+      I win
+      This is exactly how I'm written in the source code
+    </pre>
+
+
+    <h2> <mark>Mark</mark> My <mark>Words</mark></h2>
+
+    <h1 style="border:2px solid Tomato;">Border control!!!</h1>
+
+    <pre>
+      <code>
+        // beautiful block of code
+        x = 5;
+        y = 6;
+        z = x + y;
+      </code>
+    </pre>
+
+    <p id ="bottom"><a href="#top"> Jump to top </a></p>
+
+    <p>Click the button to get your coordinates.</p>
+
+    <button onclick="getLocation()">BOOM BOOM cyber security</button>
+
+    <p id="demo"></p>
+
+    <script>
+    var x = document.getElementById("demo");
+
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+      } else {
+        x.innerHTML = "Geolocation is not supported by this browser.";
+      }
+    }
+
+    function showPosition(position) {
+      x.innerHTML = "Latitude: " + position.coords.latitude +
+      "<br>Longitude: " + position.coords.longitude;
+    }
+    // let link1 = "https://www.latlong.net/c/?lat="+"40.6962723"+""&long="+"-73.9822923";
+    // <iframe src= link1 ></iframe>
+    // <a href="https://www.latlong.net/c/?lat="+position.coords.latitude+"&long="+position.coords.longitude target="_blank">(0.000000, 0.000000)</a>
+
+    </script>
+  </body>
+
+
+  </html>
