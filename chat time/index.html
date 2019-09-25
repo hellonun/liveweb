@@ -1,0 +1,64 @@
+<html>
+<head>
+	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+	<script type="text/javascript">
+	var name = prompt("Please enter your name", "Name");
+	var nameh = document.createElement("P");
+	nameh.innerHTML = name;
+	// console.log(nameh.innerHTML);
+
+	var socket = io.connect();
+
+	socket.on('connect', function() {
+		console.log("Connected");
+		console.log(socket.id);
+	});
+
+
+	// Receive from any event
+	socket.on('chatmessage', function (data, sendcol, name) {
+		console.log(data,sendcol);
+		var date = Date();
+		date = date.toString();
+		date = date.split(" ");
+
+		var newLine = document.createElement("P");
+		newLine.style.color = sendcol;
+		newLine.innerHTML =  date[4] + " "+ name + ": " + data + "<br>";
+		// document.getElementById("messages").style.color = sendcol;
+		document.getElementById("messages").prepend(newLine);
+
+		// document.getElementById("messages").style.color = sendcol;
+		// document.getElementById('messages').innerHTML = date[4] + " " + data + "<br>" + document.getElementById('messages').innerHTML;
+	}
+);
+
+var sendmessage = function(message, sendcol, name) {
+	var name = nameh.innerHTML;
+	console.log("chatmessage: " + message + name);
+	socket.emit('chatmessage', message, sendcol, name);
+};
+
+function handle(e){
+	if(e.keyCode === 13){
+		e.preventDefault(); // Ensure it is only this code that runs
+		document.getElementById("submit").click();
+	}
+}
+
+function cleartext(){
+	document.getElementById("message").value = '';
+}
+
+</script>
+</head>
+
+
+<body>
+	<input type="text" id="message" name="message" onkeypress="handle(event);">
+	<input type="submit" id="submit" value="submit" onclick="sendmessage(document.getElementById('message').value); ; cleartext()">
+	<div id="messages" style="color:rgb(0,0,0)">
+		No Messages Yet
+	</div>
+</body>
+</html>
