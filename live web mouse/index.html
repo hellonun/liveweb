@@ -1,0 +1,81 @@
+<html>
+<head>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+	var socket = io.connect();
+	var idp = [];
+	var ids = [];
+	var mousep = [];
+	var mousex ;
+	var mousey;
+	socket.on('connect', function() {
+		console.log("Connected");
+		// console.log(socket.id);
+	});
+
+	// Receive a message
+
+	socket.on("position", function(data) {
+		idp = data;
+		for (i=0;i<idp.length; i++) {
+			idx = idp[i][0];
+			if(document.getElementById(idx)){
+				mousep = Object.values(idp[i][1]);
+				mousex = mousep[0];
+				mousey = mousep[1];
+				document.getElementById(idx).style.position= "relative";
+				document.getElementById(idx).style.left= mousex+ "px";
+				document.getElementById(idx).style.top =  mousey + "px";
+			}else{
+				ids.push(idx);
+				createM(idx);
+			}
+		}
+		// console.log (id);
+	});
+
+	function createM(idx, x, y) {
+		var x = document.createElement("IMG");
+		x.setAttribute("id", idx);
+		x.setAttribute("src", "mouse.png");
+		x.setAttribute("width", "11");
+		x.setAttribute("height", "18");
+		document.body.appendChild(x);
+	}
+
+
+	// Send a message
+
+	window.addEventListener('load', function() {
+		window.addEventListener('mousemove', function(e) {
+
+			let p = new Object();
+			p.x = e.clientX;
+			p.y = e.clientY;
+
+			e.clientX
+			e.clientY
+
+			socket.emit('position', p);
+
+		});
+	});
+
+</script>
+<style>
+
+
+.none {cursor: none;}
+
+</style>
+</head>
+<body class = "none">
+	<div>
+
+
+	</div>
+
+
+
+</body>
+</html>
