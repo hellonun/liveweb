@@ -1,0 +1,307 @@
+<html>
+<head>
+	<input type="text" id = "Thing" value ="" style="display:none" >
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.sound.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<meta charset="utf-8" />
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+
+	var name = prompt("Please enter your name", "Name");
+	var nameh = document.createElement("P");
+	nameh.innerHTML = name;
+
+	var socket = io.connect();
+	var idp = [];
+	var ids = [];
+	var mousep = [];
+	var mousex ;
+	var mousey;
+
+	let q, qWdith, qHeight;
+	let rainbowNum = 10;
+	let x = 0;
+	let px = x;
+	let xx;
+	let followx = 0;
+
+	if (name){
+		socket.on('connect', function() {
+			console.log("Connected");
+			// console.log(name);
+			socket.emit('name', name);
+			// console.log(socket.id);
+		});
+	}
+
+	function keyTyped() {
+		if (name == "nun"){
+			if (key === '=') {
+				x = x + 1;
+				document.getElementById("Thing").value = x;
+				document.getElementById("submit").click();
+			}
+			if (key === '-') {
+				x = x - 1;
+				document.getElementById("Thing").value = x;
+				document.getElementById("submit").click();
+			}
+		}
+	}
+
+	// Receive a message
+
+	socket.on("xvalue", function(x) {
+		xx = x;
+		console.log(xx);
+	});
+
+	socket.on("position", function(data) {
+		idp = data;
+		for (i=0;i<idp.length; i++) {
+			idx = idp[i][0];
+			if(document.getElementById(idx)){
+				if (idp[i][1]) {
+					mousep = Object.values(idp[i][1]);
+					mousex = mousep[0];
+					mousey = mousep[1];
+					document.getElementById(idx).style.position= "relative";
+					document.getElementById(idx).style.left= mousex+ "px";
+					document.getElementById(idx).style.top =  mousey + "px";
+				} 
+			}else{
+				ids.push(idx);
+				createM(idx);
+			}
+		}
+		// console.log (id);
+	});
+
+	function createM(idx, x, y) {
+		var x = document.createElement("IMG");
+		// x.setAttribute("z-index", "0");
+		x.setAttribute("id", idx);
+		x.setAttribute("src", "mouse.png");
+		x.setAttribute("width", "11");
+		x.setAttribute("height", "18");
+		document.body.appendChild(x);
+	}
+	// Send a message
+
+	window.addEventListener('load', function() {
+		window.addEventListener('mousemove', function(e) {
+			let p = new Object();
+			p.x = e.clientX;
+			p.y = e.clientY;
+			e.clientX
+			e.clientY
+			socket.emit('position', p);
+		});
+		// window.setInterval(function() {
+		// 	let p = new Object();
+		// 	p.x = Math.random() * 400;
+		// 	p.y = Math.random() * 400;
+		//
+		// 	socket.emit('position', p);
+		// }, 1000);
+	});
+
+	var sendmessage = function(x) {
+		socket.emit('xvalue', x);
+		console.log("xvalue: " + x);
+	};
+
+	var canvas;
+
+	// P5 STUFF
+	function preload() {
+		img = loadImage('faculty2019.jpg');
+		worldmap = loadImage('worldmap.jpg');
+		mousetrap = loadImage('mousetrap.png');
+	}
+
+	function setup() {
+		canvas = createCanvas(windowWidth, windowHeight);
+		canvas.position (0,0);
+		canvas.style('z-index', '-1');
+		background (255,0,0);
+	}
+
+	function draw() {
+		if (px != x) {
+			console.log("change happened");
+			px = x;
+		}
+
+		background(255);
+		textentry(0, "hello and welcome, please set your browser to fullscreen and refresh!");
+
+		// if (xx == 1) {
+		// 	// VISUAL
+		// 	background(255);
+		// 	textentry(0, "hello and welcome, please set your browser to fullscreen and refresh!");
+		// }
+
+		if (xx == 1) {
+			// VISUAL
+			background(0);
+			worldmap.resize(windowWidth, windowWidth*1374/2000);
+			image(worldmap, 0, height / 2 - (windowWidth *1374/2000 / 2));
+			textentry(0, "where are you from?");
+		}
+
+		if (xx == 2) {
+			// VISUAL
+			background(0);
+			worldmap.resize(windowWidth, windowWidth*1374/2000);
+			image(worldmap, 0, height / 2 - (windowWidth *1374/2000 / 2));
+			textentry(0, "where are you NOW?");
+		}
+
+		if (xx == 3) {
+			// VISUAL
+			background(0);
+			worldmap.resize(windowWidth, windowWidth*1374/2000);
+			image(worldmap, 0, height / 2 - (windowWidth *1374/2000 / 2));
+			textentry(0, "where do you WANT TO BE?");
+		}
+
+		if (xx == 4) {
+			// VISUAL
+			colorMode(HSB, rainbowNum * rainbowNum);
+			for (i = 0; i < rainbowNum; i++) {
+				noStroke();
+				fill(i * rainbowNum, 100, 100);
+				rect(i * width / rainbowNum, 0, width / rainbowNum, height);
+			}
+			textentry(255, "what color of the rainbow are you?");
+		}
+
+		if (xx == 5) {
+			background(0);
+			for (i = 0; i < 100; i = i + 5) {
+				fill(255);
+				textSize(width / 60);
+				stroke(255);
+				line(0, height / 2 + width / 60, width, height / 2 + width / 60);
+				text(i, i / 100 * width, height / 2);
+			}
+			textentry(255, "how old are you?");
+		}
+
+		if (xx == 6) {
+			background(0);
+			for (i = 0; i < 100; i = i + 5) {
+				fill(255);
+				textSize(width / 60);
+				stroke(255);
+				line(0, height / 2 + width / 60, width, height / 2 + width / 60);
+				text(i, i / 100 * width, height / 2);
+			}
+			textentry(255, "how old do you feel?");
+		}
+
+		if (xx == 7) {
+			background(255);
+			textentry(0, "asking on behalf of Shawn...");
+		}
+
+		if (xx == 8) {
+			background(0);
+			for (i = 0; i < 100; i = i + 5) {
+				fill(255);
+				textSize(width / 60);
+				stroke(255);
+				line(0, height / 2 + width / 60, width, height / 2 + width / 60);
+				text(i + "%", i / 100 * width, height / 2);
+			}
+			textentry(255, "how much of live web do you understand?");
+		}
+
+		if (xx == 9) {
+			background(0);
+			for (i = 0; i < 100; i = i + 5) {
+				fill(255);
+				textSize(width / 60);
+				stroke(255);
+				line(0, height / 2 + width / 60, width, height / 2 + width / 60);
+				text(i, i / 100 * width, height / 2);
+			}
+			textentry(255, "other questions?");
+		}
+
+		if (xx == 10) {
+			background(0);
+			img.resize(windowWidth, windowWidth * 330 / 1024);
+			image(img, 0, height / 2 - (windowWidth * 330 / 1024 / 2));
+			textentry(255, "who's your favorite?");
+		}
+
+		if (xx == 11) {
+			background(0);
+			img.resize(windowWidth, windowWidth * 330 / 1024);
+			image(img, 0, height / 2 - (windowWidth * 330 / 1024 / 2));
+			textentry(255, "say what?");
+			// add name
+		}
+
+		if (xx == 12) {
+			background(255);
+			textentry(0, "follow me");
+			// followx = followx + 1;
+			followx = followx+2;
+			fill(0);
+			if (followx > width / 5*3 && followx < width / 4 * 3) {
+				mousetrap.resize(300, 300 * 330 / 1024);
+				image(mousetrap, (width / 2)+50, height / 2 - (300 * 172 / 410 / 2));
+
+			} else if (followx > width / 4 * 3) {
+				background(0);
+				textentry(255, "omg... bye");
+				noStroke();
+				fill(0);
+
+			}
+			ellipse(followx, height / 2, 15, 15);
+		}
+
+
+	}
+
+	function textentry(col, textvalue) {
+		colorMode(RGB);
+		fill(col);
+		q = textvalue;
+		textSize(12); // set size to calculate ratio
+		qWidth = textWidth(q);
+		qSize = map(qWidth / width, 0, 1, 100, -120);
+		textSize(qSize);
+		newqWidth = textWidth(q); // measure new size to position text
+		text(q, (width / 2) - newqWidth / 2, height / 4);
+	}
+
+</script>
+<style>
+
+.none {cursor: none;}
+
+
+</style>
+
+</head>
+<body class = "none">
+	<input type="submit" id="submit" value="submit" onclick="sendmessage(document.getElementById('Thing').value)" style="display:none";>
+
+	<div>
+
+
+	</div>
+
+
+
+</body>
+</html>
