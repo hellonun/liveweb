@@ -1,0 +1,96 @@
+<html>
+<head>
+  <script src="/socket.io/socket.io.js"></script>
+  <link rel="stylesheet" type="text/css" href="phoneStyle.css">
+  <script type="text/javascript">
+
+  // connect to socket server
+  var socket = io.connect();
+  socket.on('connect', function () {
+    console.log("Connected");
+  });
+
+  // when window loads
+  window.addEventListener("load", init);
+
+  function init() {
+    // calibrate button is pressed, ask for orientation premission
+    var startButton = document.getElementById("calButton");
+    startButton.addEventListener('click', () => {
+      // check if iOS
+      if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission().then(response => {
+          // if permission was granted, continue
+          if (response == 'granted') {
+            // store username
+            var nameLabel = document.getElementById('nameLabel')
+            var username = nameLabel.value;
+
+            // send username to server
+            socket.emit('shareName', username);
+
+            // hide the elements
+            nameLabel.style.visibility = "hidden";
+            document.getElementById("intro").style.visibility = "hidden";
+            document.getElementById("username").style.visibility = "hidden";
+            startButton.style.visibility = "hidden"
+
+            // listen for a change in orientation
+            window.addEventListener('deviceorientation', phoneMoved);
+            function phoneMoved(e) {
+              // save all the oriantation angles
+              var alpha = e.alpha;  // left - right
+              var beta = e.beta;  // up - down
+
+              // send alpha value to server
+              pos = {
+                // name: username,
+                a: alpha,
+                b: beta
+              }
+              socket.emit('posData', pos);
+            }
+          }
+        }).catch(console.error)
+      } else {
+        // non iOS 13+
+        // store username and sent to server
+        var nameLabel = document.getElementById('nameLabel')
+        var username = nameLabel.value;
+
+        // hide the elements
+        nameLabel.style.visibility = "hidden";
+        document.getElementById("intro").style.visibility = "hidden";
+        document.getElementById("username").style.visibility = "hidden";
+        startButton.style.visibility = "hidden"
+
+        // listen for a change in orientation
+        window.addEventListener('deviceorientation', phoneMoved);
+        function phoneMoved(e) {
+          // save all the oriantation angles
+          var alpha = e.alpha;  // left - right
+          var beta = e.beta;  // up - down
+
+          // send alpha value to server
+          pos = {
+            // name: username,
+            a: alpha,
+            b: beta
+          }
+          socket.emit('posData', pos);
+        }
+      }
+    })
+  }
+  </script>
+</head>
+
+<body>
+  <center>
+    <h1 id="username">username:</h1>
+    <input id="nameLabel" type="text">
+    <h1 id="intro">Please place your phone on a flat surface and point the top of the phone toward the screen in the front of the room. Then click the button below.</h1>
+    <button id="calButton">calibrate</button>
+  </center>
+</body>
+</html>

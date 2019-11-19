@@ -1,0 +1,117 @@
+<html>
+
+<head>
+  <script src="/socket.io/socket.io.js"></script>
+  <link rel="stylesheet" type="text/css" href="screenStyle.css">
+  <script type="text/javascript">
+
+  // connect to socket server
+  var socket = io.connect();
+  socket.on('connect', function () {
+    console.log("Connected");
+  });
+
+  // make scale function
+  const scale = (num, in_min, in_max, out_min, out_max) => {
+    return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+  }
+
+  // set position variables
+  var posX;
+  var posY;
+  var name;
+
+  // when page loads call init funciton
+  window.addEventListener('load', init);
+  function init() {
+
+    var video = document.getElementById('thevideo');
+
+    // Constraints - what do we want?
+    let constraints = { audio: false, video: true };
+
+    // Prompt the user for permission, get the stream
+    navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
+      /* Use the stream */
+
+      // Attach to our video object
+      video.srcObject = stream;
+
+      // Wait for the stream to load enough to play
+      video.onloadedmetadata = function(e) {
+        video.play();
+        // draw();
+      };
+    })
+    .catch(function(err) {
+      /* Handle the error */
+      alert(err);
+    });
+
+    // PRIMER CANVAS!
+    // access canvas
+    var primer = document.getElementById('primer');
+    var primercontext = primer.getContext('2d');
+    // resize canvas to fill the screen
+    primer.width = window.innerWidth;
+    primer.height = window.innerHeight;
+
+    // access canvas
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+    // resize canvas to fill the screen
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // set inital position
+    // posX = 0;
+    // posY = 0;
+
+
+    function primerDraw() {
+
+      primercontext.drawImage(video,0,0, primer.width, primer.height);
+
+    }
+
+    // put a users drawing on the screen
+    function userDraw(posX, posY) {
+      // context.drawImage(video,0,0, canvas.width, canvas.height);
+      context.translate(canvas.width/2, canvas.height/2);
+      // draw background
+      context.fillStyle = "#FFF";
+      context.fillRect(posX, posY, 5, 5);
+
+      context.translate(-canvas.width/2, -canvas.height/2);
+    }
+
+
+    // when a position value from a user is recieved
+    socket.on('posData', (data) => {
+      let posX ;
+      let posY ;
+      // scale alpha
+      if(data.a<360 && data.a>300){
+        posX = scale(data.a, 360, 300, 0, canvas.width/2);
+      }else if(data.a>0 && data.a<60){
+        posX = scale(data.a, 0, 60, 0, -canvas.width/2);
+      }
+      // scale beta
+      if(data.b>0 && data.b<60){
+        posY = scale(data.b, 0, 60, canvas.height/2, -canvas.height/2)
+      }
+      primerDraw();
+      userDraw(posX, posY);
+    })
+  }
+
+  </script>
+</head>
+
+<body style="margin: 0%;">
+  <video hidden id="thevideo" width="800px" height="600px"></video>
+  <canvas  id="primer" width="800px" height="600px" ></canvas>
+  <canvas  id="canvas" width="800px" height="600px" ></canvas>
+  <img id="theimage" />
+</body>
+</html>
